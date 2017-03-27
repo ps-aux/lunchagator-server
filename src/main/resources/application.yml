@@ -1,8 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:postgresql:${DB_NAME}
-    username: ${DB_USER}
-    password: ${DB_USER_PASS}
   jackson:
     serialization:
       # So we get dd-mm-yy instead of [dd,mm,yy] for LocalDate
