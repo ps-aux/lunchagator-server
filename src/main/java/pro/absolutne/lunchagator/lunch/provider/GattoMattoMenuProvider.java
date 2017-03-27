@@ -1,6 +1,5 @@
 package pro.absolutne.lunchagator.lunch.provider;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pro.absolutne.lunchagator.lunch.Location;
 import pro.absolutne.lunchagator.lunch.Restaurant;
@@ -18,7 +17,6 @@ public class GattoMattoMenuProvider extends ZomatoMenuProvider {
     private final static int zomatoId = 16507679;
 
 
-    @Autowired
     public GattoMattoMenuProvider(ZomatoService zomatoService) {
         super(restaurant, zomatoId, zomatoService);
     }

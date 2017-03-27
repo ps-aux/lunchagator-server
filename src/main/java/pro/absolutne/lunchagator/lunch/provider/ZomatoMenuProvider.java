@@ -1,6 +1,5 @@
 package pro.absolutne.lunchagator.lunch.provider;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import pro.absolutne.lunchagator.lunch.DailyMenu;
 import pro.absolutne.lunchagator.lunch.MenuProvider;
 import pro.absolutne.lunchagator.lunch.Restaurant;
