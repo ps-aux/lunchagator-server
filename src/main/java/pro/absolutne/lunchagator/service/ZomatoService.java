@@ -8,9 +8,9 @@ import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import pro.absolutne.lunchagator.lunch.Location;
-import pro.absolutne.lunchagator.lunch.MenuItem;
-import pro.absolutne.lunchagator.lunch.Restaurant;
+import pro.absolutne.lunchagator.data.entity.Location;
+import pro.absolutne.lunchagator.data.entity.MenuItem;
+import pro.absolutne.lunchagator.data.entity.Restaurant;
 
 import java.io.IOException;
 import java.util.Collection;

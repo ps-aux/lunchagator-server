@@ -1,4 +1,4 @@
-package pro.absolutne.lunchagator.lunch;
+package pro.absolutne.lunchagator.data.entity;
 
 import lombok.Data;
 

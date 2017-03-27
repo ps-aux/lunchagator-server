@@ -2,9 +2,9 @@ package pro.absolutne.lunchagator.lunch.provider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pro.absolutne.lunchagator.lunch.DailyMenu;
-import pro.absolutne.lunchagator.lunch.Restaurant;
-import pro.absolutne.lunchagator.lunch.ZomatoMenuInfoSource;
+import pro.absolutne.lunchagator.data.entity.DailyMenu;
+import pro.absolutne.lunchagator.data.entity.Restaurant;
+import pro.absolutne.lunchagator.data.entity.ZomatoMenuInfoSource;
 import pro.absolutne.lunchagator.service.ZomatoService;
 
 import java.time.LocalDate;

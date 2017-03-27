@@ -3,13 +3,16 @@ package pro.absolutne.lunchagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
+import pro.absolutne.lunchagator.data.entity.*;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepository;
-import pro.absolutne.lunchagator.lunch.*;
 import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
 import pro.absolutne.lunchagator.mvc.BadRequestException;
 import pro.absolutne.lunchagator.service.ZomatoService;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -30,14 +33,26 @@ public class MyController {
     @Autowired
     private ZomatoMenusProvider zomatoMenusProvider;
 
+    @PostMapping("go")
+    public Restaurant bar() {
 
-/*    private final static Restaurant restaurant = new Restaurant(
-            "Gatto Matto",
-            new Location(
-                    "Panská 17, 811 01 Bratislava - Staré Mesto",
-                    48.142415,
-                    17.107431),
-            new ZomatoMenuInfoSource(16507679));*/
+        Restaurant restaurant = new Restaurant(
+                "Gatto Matto",
+                new Location(
+                        "Panská 17, 811 01 Bratislava - Staré Mesto",
+                        48.142415,
+                        17.107431));
+        ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
+        is.setRestaurantId(16507679);
+        repo.save(restaurant);
+        restaurant.setMenuInfoSource(is);
+        return repo.save(restaurant);
+    }
+
+    @GetMapping("zo")
+    public Collection<Restaurant> zo() {
+        return repo.findZomatoRestaurants();
+    }
 
 
     @GetMapping("dbg")
@@ -60,7 +75,9 @@ public class MyController {
             return opt.get();
 
         Restaurant r = zomato.getRestaurant(id);
-        r.setMenuInfoSource(new ZomatoMenuInfoSource(id));
+        ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
+        is.setRestaurantId(id);
+        r.setMenuInfoSource(is);
         r = repo.save(r);
 
         return r;
