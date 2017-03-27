@@ -6,11 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pro.absolutne.lunchagator.lunch.DailyMenu;
-import pro.absolutne.lunchagator.lunch.provider.GattoMattoMenuProvider;
-import pro.absolutne.lunchagator.lunch.provider.ZomatoService;
+import pro.absolutne.lunchagator.lunch.MenuProvider;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @CrossOrigin
 @RequestMapping("menu")
@@ -18,7 +19,7 @@ import java.util.Collections;
 public class MyController {
 
     @Autowired
-    private GattoMattoMenuProvider provider;
+    private List<MenuProvider> providers;
 
 
     @GetMapping("dbg")
@@ -28,6 +29,8 @@ public class MyController {
 
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
-        return Collections.singleton(provider.findMenuFor());
+        return providers.stream()
+                .map(MenuProvider::findDailyMenu)
+                .collect(toList());
     }
 }

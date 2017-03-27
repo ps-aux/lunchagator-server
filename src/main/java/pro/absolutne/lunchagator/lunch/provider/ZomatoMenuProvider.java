@@ -13,7 +13,7 @@ public abstract class ZomatoMenuProvider implements MenuProvider {
     private final int zomatoId;
     private final Restaurant restaurant;
 
-    public ZomatoMenuProvider(Restaurant restaurant,
+    ZomatoMenuProvider(Restaurant restaurant,
                               int zomatoId,
                               ZomatoService zomato) {
         this.zomatoId = zomatoId;
@@ -22,7 +22,7 @@ public abstract class ZomatoMenuProvider implements MenuProvider {
     }
 
     @Override
-    public DailyMenu findMenuFor() {
+    public DailyMenu findDailyMenu() {
         return new DailyMenu(LocalDate.now(),
                 restaurant,
                 zomato.getDishes(zomatoId));
