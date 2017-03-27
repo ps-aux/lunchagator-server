@@ -16,6 +16,6 @@ public interface RestaurantRepository extends
     Collection<Restaurant> findZomatoRestaurants();
 
     @Query("SELECT r from Restaurant r where r.menuInfoSource.restaurantId = :id")
-    Optional<Restaurant> findByZomatoId(int id);
+    Optional<Restaurant> findByZomatoId(@Param("id") int id);
 
 }

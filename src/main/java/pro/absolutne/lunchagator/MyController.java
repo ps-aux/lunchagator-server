@@ -1,7 +1,6 @@
 package pro.absolutne.lunchagator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 import pro.absolutne.lunchagator.data.entity.*;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepository;
@@ -9,10 +8,7 @@ import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
 import pro.absolutne.lunchagator.mvc.BadRequestException;
 import pro.absolutne.lunchagator.service.ZomatoService;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -85,9 +81,10 @@ public class MyController {
 
     @PutMapping("zomato-file-import")
     public String importZomatFromFile() throws IOException {
-        File f = new ClassPathResource("import-from-zomato.txt").getFile();
+        InputStream is = this.getClass()
+                .getResourceAsStream("/import-from-zomato.txt");
 
-        BufferedReader br = new BufferedReader(new FileReader(f));
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
         while (true) {
             String line = br.readLine();
