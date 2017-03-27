@@ -1,36 +1,102 @@
 package pro.absolutne.lunchagator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pro.absolutne.lunchagator.lunch.DailyMenu;
-import pro.absolutne.lunchagator.lunch.MenuProvider;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.bind.annotation.*;
+import pro.absolutne.lunchagator.data.repo.RestaurantRepository;
+import pro.absolutne.lunchagator.lunch.*;
+import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
+import pro.absolutne.lunchagator.mvc.BadRequestException;
+import pro.absolutne.lunchagator.service.ZomatoService;
 
+import java.io.*;
 import java.util.Collection;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Optional;
 
 @CrossOrigin
 @RequestMapping("menu")
 @RestController
 public class MyController {
 
+//    @Autowired
+//    private List<MenuProvider> providers;
+
     @Autowired
-    private List<MenuProvider> providers;
+    private RestaurantRepository repo;
+
+    @Autowired
+    private ZomatoService zomato;
+
+    @Autowired
+    private ZomatoMenusProvider zomatoMenusProvider;
+
+
+/*    private final static Restaurant restaurant = new Restaurant(
+            "Gatto Matto",
+            new Location(
+                    "Panská 17, 811 01 Bratislava - Staré Mesto",
+                    48.142415,
+                    17.107431),
+            new ZomatoMenuInfoSource(16507679));*/
 
 
     @GetMapping("dbg")
     public String foo() {
-        return "Foo!";
+        Restaurant r = zomato.getRestaurant(16517005);
+
+        return r.toString();
+    }
+
+
+    @PutMapping("zomato-import")
+    public Restaurant importZomatoResurant(@RequestParam int id) {
+        if (!zomato.hasDailyMenu(id))
+            throw new BadRequestException("Restaurant " + id +
+                    " does not have daily menu @ Zomato");
+
+        // Prevent creating duplicates
+        Optional<Restaurant> opt = repo.findByZomatoId(id);
+        if (opt.isPresent())
+            return opt.get();
+
+        Restaurant r = zomato.getRestaurant(id);
+        r.setMenuInfoSource(new ZomatoMenuInfoSource(id));
+        r = repo.save(r);
+
+        return r;
+    }
+
+    @PutMapping("zomato-file-import")
+    public String importZomatFromFile() throws IOException {
+        File f = new ClassPathResource("import-from-zomato.txt").getFile();
+
+        BufferedReader br = new BufferedReader(new FileReader(f));
+
+        while (true) {
+            String line = br.readLine();
+            if (line == null)
+                break;
+            if (line.startsWith("#"))
+                continue;
+            int id = Integer.parseInt(line.trim());
+            importZomatoResurant(id);
+        }
+
+        return "Done";
+    }
+
+    @GetMapping("has-menu")
+    public boolean hasZomatoMenu(@RequestParam int id) {
+        return zomato.hasDailyMenu(id);
+    }
+
+    @GetMapping("dbg2")
+    public Iterable<Restaurant> foo2() {
+        return repo.findZomatoRestaurants();
     }
 
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
-        return providers.stream()
-                .map(MenuProvider::findDailyMenu)
-                .collect(toList());
+        return zomatoMenusProvider.findDailyMenus(repo.findZomatoRestaurants());
     }
 }

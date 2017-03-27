@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 
 @Component
-public class FixedMenuProvider implements MenuProvider {
+public class FixedMenuProvider {
 
-    private Restaurant restaurant = new Restaurant(
+/*    private Restaurant restaurant = new Restaurant(
             "fixed-restaurant",
             new Location("nowhere", 23, 55));
 
@@ -19,5 +19,5 @@ public class FixedMenuProvider implements MenuProvider {
         MenuItem i = new MenuItem("pre dobytok", 24);
 
         return new DailyMenu(LocalDate.now(), restaurant, Collections.singleton(i));
-    }
+    }*/
 }
