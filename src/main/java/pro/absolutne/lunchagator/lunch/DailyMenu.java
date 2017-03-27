@@ -11,8 +11,8 @@ import java.util.Collection;
 public class DailyMenu {
 
     private final LocalDate day;
-    private final Collection<MenuItem> items;
     private final Restaurant restaurant;
+    private final Collection<MenuItem> items;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate getDay() {

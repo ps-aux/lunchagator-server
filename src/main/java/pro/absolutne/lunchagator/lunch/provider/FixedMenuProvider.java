@@ -16,6 +16,6 @@ public class FixedMenuProvider implements MenuProvider {
 
         MenuItem i = new MenuItem("pre dobytok", 24);
 
-        return new DailyMenu(LocalDate.now(), Collections.singleton(i), restaurant);
+        return new DailyMenu(LocalDate.now(), restaurant, Collections.singleton(i));
     }
 }
