@@ -60,6 +60,7 @@ public class DailyMenuService {
 
         Collection<DailyMenu> result = new ArrayList<>();
 
+        result.addAll(fromDb);
         // TODO don't do lazy call but do cron import at the beginning of the day
         result.addAll(getMenus(zomatoMenusProvider::findDailyMenus, fromZomato));
         result.addAll(getMenus(this::fromClass, fromClass));
