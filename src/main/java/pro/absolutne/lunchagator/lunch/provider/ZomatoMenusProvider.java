@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import pro.absolutne.lunchagator.data.entity.DailyMenu;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
 import pro.absolutne.lunchagator.data.entity.ZomatoMenuInfoSource;
-import pro.absolutne.lunchagator.service.ZomatoService;
+import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -36,7 +36,7 @@ public class ZomatoMenusProvider {
         ZomatoMenuInfoSource info = (ZomatoMenuInfoSource) r.getMenuInfoSource();
         DailyMenu m = new DailyMenu();
         m.setDay(LocalDate.now());
-        m.setItems(zomato.getDishes(info.getRestaurantId()));
+        m.setItems(zomato.getDishes(info.getZomatoId()));
         m.setRestaurant(r);
 
         return m;

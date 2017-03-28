@@ -7,9 +7,10 @@ DROP TABLE IF EXISTS restaurant;
 DROP TABLE IF EXISTS menu_info_source;
 
 CREATE TABLE menu_info_source (
-  id            INTEGER PRIMARY KEY,
-  type          VARCHAR(64)    NOT NULL,
-  restaurant_id INTEGER UNIQUE NOT NULL
+  id             INTEGER PRIMARY KEY,
+  type           VARCHAR(64) NOT NULL,
+  zomato_id      INTEGER UNIQUE,
+  provider_class VARCHAR(256)
 );
 
 CREATE TABLE restaurant (
@@ -34,5 +35,6 @@ CREATE TABLE menu_item (
   price         DECIMAL                            NOT NULL,
   daily_menu_id INTEGER REFERENCES daily_menu (id) NOT NULL
 );
+
 
 

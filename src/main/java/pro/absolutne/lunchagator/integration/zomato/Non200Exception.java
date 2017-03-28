@@ -1,4 +1,4 @@
-package pro.absolutne.lunchagator.service;
+package pro.absolutne.lunchagator.integration.zomato;
 
 public class Non200Exception extends RuntimeException {
 

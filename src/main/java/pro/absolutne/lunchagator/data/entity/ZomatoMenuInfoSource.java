@@ -10,6 +10,6 @@ import javax.persistence.Entity;
 @Data
 public class ZomatoMenuInfoSource extends MenuInfoSource {
 
-    private int restaurantId;
+    private int zomatoId;
 
 }

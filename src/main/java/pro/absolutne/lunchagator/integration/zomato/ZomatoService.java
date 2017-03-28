@@ -1,4 +1,4 @@
-package pro.absolutne.lunchagator.service;
+package pro.absolutne.lunchagator.integration.zomato;
 
 
 import com.jayway.jsonpath.JsonPath;
@@ -11,18 +11,16 @@ import org.springframework.stereotype.Service;
 import pro.absolutne.lunchagator.data.entity.Location;
 import pro.absolutne.lunchagator.data.entity.MenuItem;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
+import pro.absolutne.lunchagator.scraping.ScrapUtils;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 @Service
 public class ZomatoService {
 
@@ -40,7 +38,6 @@ public class ZomatoService {
 
     private final OkHttpClient client = new OkHttpClient();
 
-    private static final Pattern DECIMAL_NUM = Pattern.compile("\\d+,?\\d*");
     private static final String DISHES_PATH = "$.daily_menus[0].daily_menu.dishes[*].dish";
 
     private static final String ROZHRANOVANY_KLIC = "26f285d8d3210d236d113e223850a017";
@@ -131,14 +128,8 @@ public class ZomatoService {
 
         double priceVal = 0;
 
-        if (!price.isEmpty()) {
-            Matcher m = DECIMAL_NUM.matcher(price);
-            boolean found = m.find();
-            assert found;
-            price = m.group().replace(",", ".");
-            priceVal = Double.parseDouble(price);
-        }
-
+        if (!price.isEmpty())
+            priceVal = ScrapUtils.retrieveDecimal(price).get();
 
         MenuItem item = new MenuItem();
         item.setName(name);

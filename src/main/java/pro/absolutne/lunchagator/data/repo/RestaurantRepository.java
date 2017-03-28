@@ -15,7 +15,7 @@ public interface RestaurantRepository extends
             " JOIN r.menuInfoSource s where TYPE(s) = ZomatoMenuInfoSource")
     Collection<Restaurant> findZomatoRestaurants();
 
-    @Query("SELECT r from Restaurant r where r.menuInfoSource.restaurantId = :id")
+    @Query("SELECT r from Restaurant r where r.menuInfoSource.zomatoId = :id")
     Optional<Restaurant> findByZomatoId(@Param("id") int id);
 
 }

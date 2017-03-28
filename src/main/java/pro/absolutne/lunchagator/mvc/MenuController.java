@@ -1,14 +1,15 @@
-package pro.absolutne.lunchagator;
+package pro.absolutne.lunchagator.mvc;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pro.absolutne.lunchagator.data.entity.*;
 import pro.absolutne.lunchagator.data.repo.DailyMenuRepo;
+import pro.absolutne.lunchagator.data.repo.MenuInfoSourceRepo;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepository;
+import pro.absolutne.lunchagator.lunch.provider.PlzenskaMenuProvider;
 import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
-import pro.absolutne.lunchagator.mvc.BadRequestException;
-import pro.absolutne.lunchagator.service.ZomatoService;
+import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 @CrossOrigin
 @RequestMapping("menu")
 @RestController
-public class MyController {
+public class MenuController {
 
 //    @Autowired
 //    private List<MenuProvider> providers;
@@ -35,6 +36,9 @@ public class MyController {
     private DailyMenuRepo menuRepo;
 
     @Autowired
+    private MenuInfoSourceRepo menuInfoSourceRepo;
+
+    @Autowired
     private ZomatoService zomato;
 
     @Autowired
@@ -44,14 +48,15 @@ public class MyController {
     public Restaurant bar() {
 
         Restaurant restaurant = new Restaurant();
-        restaurant.setName("Gatto Matto");
+        restaurant.setName("Test rest");
         restaurant.setLocation(
                 new Location(
                         "Panská 17, 811 01 Bratislava - Staré Mesto",
                         48.142415,
                         17.107431));
+
         ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
-        is.setRestaurantId(16507679);
+        is.setZomatoId(16507679);
         restaurantRepo.save(restaurant);
         restaurant.setMenuInfoSource(is);
         return restaurantRepo.save(restaurant);
@@ -59,17 +64,25 @@ public class MyController {
 
 
     @GetMapping("dbg")
-    public DailyMenu foo() {
-        DailyMenu menu = new DailyMenu();
-        MenuItem i = new MenuItem();
-        i.setName("jaja");
-        i.setPrice(33);
-        menu.setItems(Collections.singletonList(i));
-        Restaurant r = restaurantRepo.findZomatoRestaurants().iterator().next();
-        menu.setRestaurant(r);
-        menu.setDay(LocalDate.now());
+    public DailyMenu foo(PlzenskaMenuProvider provider) {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("Plzenska");
+        restaurant.setLocation(
+                new Location(
+                        "Panská 17, 811 01 Bratislava - Staré Mesto",
+                        48.142415,
+                        17.107431));
 
-        return menuRepo.save(menu);
+        return provider.findDailyMenu(restaurant);
+    }
+
+    @GetMapping("dbg2")
+    public ClassMenuInfoSource foo2(PlzenskaMenuProvider provider) {
+        ClassMenuInfoSource s = new ClassMenuInfoSource();
+
+        s.setProviderClass(PlzenskaMenuProvider.class);
+
+        return menuInfoSourceRepo.save(s);
     }
 
 
@@ -88,7 +101,7 @@ public class MyController {
 
         Restaurant r = zomato.getRestaurant(id);
         ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
-        is.setRestaurantId(id);
+        is.setZomatoId(id);
         r.setMenuInfoSource(is);
         r = restaurantRepo.save(r);
 
@@ -119,11 +132,6 @@ public class MyController {
     @GetMapping("has-menu")
     public boolean hasZomatoMenu(@RequestParam int id) {
         return zomato.hasDailyMenu(id);
-    }
-
-    @GetMapping("dbg2")
-    public Iterable<Restaurant> foo2() {
-        return restaurantRepo.findZomatoRestaurants();
     }
 
     @GetMapping("today")
