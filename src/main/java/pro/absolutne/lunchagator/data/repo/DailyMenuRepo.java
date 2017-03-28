@@ -1,7 +1,7 @@
 package pro.absolutne.lunchagator.data.repo;
 
-/**
- * Created by arkonix on 28.3.2017.
- */
-public class DailyMenuRepo {
+import org.springframework.data.repository.CrudRepository;
+import pro.absolutne.lunchagator.data.entity.DailyMenu;
+
+public interface DailyMenuRepo extends CrudRepository<DailyMenu,Long>{
 }

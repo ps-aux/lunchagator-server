@@ -12,6 +12,7 @@ import pro.absolutne.lunchagator.data.entity.Location;
 import pro.absolutne.lunchagator.data.entity.MenuItem;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -134,6 +135,10 @@ public class ZomatoService {
         }
 
 
-        return new MenuItem(name, priceVal);
+        MenuItem item = new MenuItem();
+        item.setName(name);
+        item.setPrice(priceVal);
+
+        return item;
     }
 }

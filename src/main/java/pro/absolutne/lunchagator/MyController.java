@@ -3,13 +3,16 @@ package pro.absolutne.lunchagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pro.absolutne.lunchagator.data.entity.*;
+import pro.absolutne.lunchagator.data.repo.DailyMenuRepo;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepository;
 import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
 import pro.absolutne.lunchagator.mvc.BadRequestException;
 import pro.absolutne.lunchagator.service.ZomatoService;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @CrossOrigin
@@ -21,7 +24,10 @@ public class MyController {
 //    private List<MenuProvider> providers;
 
     @Autowired
-    private RestaurantRepository repo;
+    private RestaurantRepository restaurantRepo;
+
+    @Autowired
+    private DailyMenuRepo menuRepo;
 
     @Autowired
     private ZomatoService zomato;
@@ -40,22 +46,24 @@ public class MyController {
                         17.107431));
         ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
         is.setRestaurantId(16507679);
-        repo.save(restaurant);
+        restaurantRepo.save(restaurant);
         restaurant.setMenuInfoSource(is);
-        return repo.save(restaurant);
-    }
-
-    @GetMapping("zo")
-    public Collection<Restaurant> zo() {
-        return repo.findZomatoRestaurants();
+        return restaurantRepo.save(restaurant);
     }
 
 
     @GetMapping("dbg")
-    public String foo() {
-        Restaurant r = zomato.getRestaurant(16517005);
+    public DailyMenu foo() {
+        DailyMenu menu = new DailyMenu();
+        MenuItem i = new MenuItem();
+        i.setName("jaja");
+        i.setPrice(33);
+        menu.setItems(Collections.singleton(i));
+        Restaurant r = restaurantRepo.findZomatoRestaurants().iterator().next();
+        menu.setRestaurant(r);
+        menu.setDay(LocalDate.now());
 
-        return r.toString();
+        return menuRepo.save(menu);
     }
 
 
@@ -66,7 +74,7 @@ public class MyController {
                     " does not have daily menu @ Zomato");
 
         // Prevent creating duplicates
-        Optional<Restaurant> opt = repo.findByZomatoId(id);
+        Optional<Restaurant> opt = restaurantRepo.findByZomatoId(id);
         if (opt.isPresent())
             return opt.get();
 
@@ -74,7 +82,7 @@ public class MyController {
         ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
         is.setRestaurantId(id);
         r.setMenuInfoSource(is);
-        r = repo.save(r);
+        r = restaurantRepo.save(r);
 
         return r;
     }
@@ -106,11 +114,11 @@ public class MyController {
 
     @GetMapping("dbg2")
     public Iterable<Restaurant> foo2() {
-        return repo.findZomatoRestaurants();
+        return restaurantRepo.findZomatoRestaurants();
     }
 
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
-        return zomatoMenusProvider.findDailyMenus(repo.findZomatoRestaurants());
+        return zomatoMenusProvider.findDailyMenus(restaurantRepo.findZomatoRestaurants());
     }
 }

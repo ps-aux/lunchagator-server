@@ -34,8 +34,11 @@ public class ZomatoMenusProvider {
             throw new IllegalArgumentException("Restaurant does not have Zomato info source");
 
         ZomatoMenuInfoSource info = (ZomatoMenuInfoSource) r.getMenuInfoSource();
-        return new DailyMenu(LocalDate.now(),
-                r, zomato.getDishes(info.getRestaurantId()));
+        DailyMenu m = new DailyMenu();
+        m.setDay(LocalDate.now());
+        m.setItems(zomato.getDishes(info.getRestaurantId()));
+        m.setRestaurant(r);
 
+        return m;
     }
 }
