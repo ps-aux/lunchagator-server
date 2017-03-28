@@ -119,6 +119,17 @@ public class MyController {
 
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
+        Collection<Restaurant> r = restaurantRepo.findZomatoRestaurants();
+
+        System.out.println(r);
+        Collection<DailyMenu> m = menuRepo.findByDayAndRestaurants(LocalDate.now(), r);
+        System.out.println(m);
+
         return zomatoMenusProvider.findDailyMenus(restaurantRepo.findZomatoRestaurants());
+    }
+
+    private Collection<DailyMenu> menus(Collection<Restaurant> restaurants) {
+
+        return null;
     }
 }
