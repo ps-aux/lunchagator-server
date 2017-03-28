@@ -90,7 +90,7 @@ public class MyController {
             String line = br.readLine();
             if (line == null)
                 break;
-            if (line.startsWith("#"))
+            if (line.startsWith("#") || line.trim().isEmpty())
                 continue;
             int id = Integer.parseInt(line.trim());
             importZomatoResurant(id);
