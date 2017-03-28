@@ -1,5 +1,6 @@
 package pro.absolutne.lunchagator.lunch.provider;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,11 +17,14 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 @Component
 public class PlzenskaMenuProvider implements MenuProvider {
 
     @Override
     public DailyMenu findDailyMenu(Restaurant r) {
+
+        log.debug("Finding menu for", r);
 
         Document d = ScrapUtils.getDocument("http://www.plzenska.sk/prazdroj/menu.php");
 

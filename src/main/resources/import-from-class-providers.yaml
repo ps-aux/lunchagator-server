@@ -1,0 +1,11 @@
+---
+
+- restaurant:
+    name: Prazdroj
+    url: http://www.plzenska.sk/prazdroj/menu.php
+    location:
+      address: Mostova 8, Stare Mesto, Bratislava I
+      latitude: 48.141329
+      longitude: 17.109697
+  menu-source: pro.absolutne.lunchagator.lunch.provider.PlzenskaMenuProvider
+

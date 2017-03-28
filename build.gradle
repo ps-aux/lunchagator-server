@@ -21,6 +21,7 @@ apply plugin: 'org.springframework.boot'
 
 
 version = '0.0.1-SNAPSHOT'
+def jacksonVersion = '2.8.7' //Sync with spring boot
 sourceCompatibility = 1.8
 
 repositories {
@@ -32,7 +33,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0'
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion"
+
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     compile 'org.flywaydb:flyway-core:4.1.2'
     compile 'org.jsoup:jsoup:1.8.3'
@@ -40,4 +43,5 @@ dependencies {
     compile 'com.jayway.jsonpath:json-path:2.2.0'
     compileOnly "org.projectlombok:lombok:1.16.16"
     compile 'org.postgresql:postgresql:9.4-1201-jdbc41'
+
 }
