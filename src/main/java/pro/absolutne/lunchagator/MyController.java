@@ -129,6 +129,8 @@ public class MyController {
     }
 
     private Collection<DailyMenu> menus(Collection<Restaurant> restaurants) {
+        if (restaurants.isEmpty())
+            return Collections.emptyList();
 
         return null;
     }
