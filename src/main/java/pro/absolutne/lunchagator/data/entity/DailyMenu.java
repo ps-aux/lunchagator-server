@@ -7,6 +7,8 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Data
 @Entity
@@ -28,6 +30,11 @@ public class DailyMenu {
     @JsonSerialize(using = LocalDateSerializer.class)
     public LocalDate getDay() {
         return day;
+    }
+
+    public void setItems(List<MenuItem> items) {
+        items.forEach(i -> i.setDailyMenu(this));
+        this.items = Collections.unmodifiableList(items);
     }
 
 

@@ -45,7 +45,7 @@ public class ZomatoService {
 
     private static final String ROZHRANOVANY_KLIC = "26f285d8d3210d236d113e223850a017";
 
-    public Collection<MenuItem> getDishes(int restaurantId) {
+    public List<MenuItem> getDishes(int restaurantId) {
         Request r = buildRequest(setRestaurantId(DAILY_MENU_URL, restaurantId));
         List<Map<String, String>> d = JsonPath.parse(makeRequest(r)).read(DISHES_PATH);
 
@@ -71,10 +71,15 @@ public class ZomatoService {
         Request r = buildRequest(setRestaurantId(RESTAURANT_URL, id));
         Map<String, Object> res = JsonPath.parse(makeRequest(r)).read("$");
 
-        Location location = getLocation(res);
-        String address = (String) res.get("name");
+        String name = (String) res.get("name");
+        String url = (String) res.get("url");
 
-        return new Restaurant(address, location);
+        Restaurant rest = new Restaurant();
+        rest.setLocation(getLocation(res));
+        rest.setName(name);
+        rest.setUrl(url.split("\\?")[0]); // Remove query string (has just referals)
+
+        return rest;
     }
 
     private Location getLocation(Map<String, Object> res) {

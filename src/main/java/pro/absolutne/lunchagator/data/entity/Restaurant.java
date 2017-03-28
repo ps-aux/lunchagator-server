@@ -17,6 +17,8 @@ public class Restaurant {
 
     private String name;
 
+    private String url;
+
     @Embedded
     private Location location;
 
@@ -24,10 +26,6 @@ public class Restaurant {
     @OneToOne
     private MenuInfoSource menuInfoSource;
 
-    public Restaurant(String name, Location location) {
-        this.name = name;
-        this.location = location;
-    }
 
     public Restaurant() {
 

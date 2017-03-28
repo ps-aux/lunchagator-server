@@ -7,7 +7,7 @@ spring:
 logging:
   level:
     pro.absolutne: trace
-    org.hibernate: trace
+    org.hibernate: info
 
 management:
   security:

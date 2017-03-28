@@ -8,29 +8,30 @@ DROP TABLE IF EXISTS menu_info_source;
 
 CREATE TABLE menu_info_source (
   id            INTEGER PRIMARY KEY,
-  type          VARCHAR(64),
+  type          VARCHAR(64)    NOT NULL,
   restaurant_id INTEGER UNIQUE NOT NULL
 );
 
 CREATE TABLE restaurant (
   id                  INTEGER PRIMARY KEY,
-  name                VARCHAR(256),
-  address             VARCHAR(256),
-  latitude            DECIMAL,
-  longitude           DECIMAL,
+  name                VARCHAR(256) NOT NULL,
+  address             VARCHAR(256) NOT NULL,
+  url                 VARCHAR(256) NOT NULL,
+  latitude            DECIMAL      NOT NULL,
+  longitude           DECIMAL      NOT NULL,
   menu_info_source_id INTEGER REFERENCES menu_info_source (id)
 );
 
 CREATE TABLE daily_menu (
   id            INTEGER PRIMARY KEY,
-  day           DATE,
+  day           DATE                               NOT NULL,
   restaurant_id INTEGER REFERENCES restaurant (id) NOT NULL
 );
 
 CREATE TABLE menu_item (
   id            INTEGER PRIMARY KEY,
-  name          VARCHAR(256),
-  price         DECIMAL,
+  name          VARCHAR(256)                       NOT NULL,
+  price         DECIMAL                            NOT NULL,
   daily_menu_id INTEGER REFERENCES daily_menu (id) NOT NULL
 );
 

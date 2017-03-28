@@ -1,5 +1,6 @@
 package pro.absolutne.lunchagator;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pro.absolutne.lunchagator.data.entity.*;
@@ -11,10 +12,14 @@ import pro.absolutne.lunchagator.service.ZomatoService;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
+
+@Slf4j
 @CrossOrigin
 @RequestMapping("menu")
 @RestController
@@ -38,8 +43,9 @@ public class MyController {
     @PostMapping("go")
     public Restaurant bar() {
 
-        Restaurant restaurant = new Restaurant(
-                "Gatto Matto",
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("Gatto Matto");
+        restaurant.setLocation(
                 new Location(
                         "Panská 17, 811 01 Bratislava - Staré Mesto",
                         48.142415,
@@ -58,7 +64,7 @@ public class MyController {
         MenuItem i = new MenuItem();
         i.setName("jaja");
         i.setPrice(33);
-        menu.setItems(Collections.singleton(i));
+        menu.setItems(Collections.singletonList(i));
         Restaurant r = restaurantRepo.findZomatoRestaurants().iterator().next();
         menu.setRestaurant(r);
         menu.setDay(LocalDate.now());
@@ -69,14 +75,16 @@ public class MyController {
 
     @PutMapping("zomato-import")
     public Restaurant importZomatoResurant(@RequestParam int id) {
-        if (!zomato.hasDailyMenu(id))
-            throw new BadRequestException("Restaurant " + id +
-                    " does not have daily menu @ Zomato");
-
         // Prevent creating duplicates
         Optional<Restaurant> opt = restaurantRepo.findByZomatoId(id);
         if (opt.isPresent())
             return opt.get();
+
+        log.debug("Importing Zomato restaurant {}", id);
+        if (!zomato.hasDailyMenu(id))
+            throw new BadRequestException("Restaurant " + id +
+                    " does not have daily menu @ Zomato");
+
 
         Restaurant r = zomato.getRestaurant(id);
         ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
@@ -89,6 +97,7 @@ public class MyController {
 
     @PutMapping("zomato-file-import")
     public String importZomatFromFile() throws IOException {
+        log.info("Importing Zomato restaurants from file");
         InputStream is = this.getClass()
                 .getResourceAsStream("/import-from-zomato.txt");
 
@@ -119,19 +128,42 @@ public class MyController {
 
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
-        Collection<Restaurant> r = restaurantRepo.findZomatoRestaurants();
+        Collection<Restaurant> rests = restaurantRepo.findZomatoRestaurants();
 
-        System.out.println(r);
-        Collection<DailyMenu> m = menuRepo.findByDayAndRestaurants(LocalDate.now(), r);
-        System.out.println(m);
-
-        return zomatoMenusProvider.findDailyMenus(restaurantRepo.findZomatoRestaurants());
+        return doGetMenus(rests);
     }
 
-    private Collection<DailyMenu> menus(Collection<Restaurant> restaurants) {
+    private Collection<DailyMenu> doGetMenus(Collection<Restaurant> restaurants) {
         if (restaurants.isEmpty())
             return Collections.emptyList();
 
-        return null;
+        // Find in DB first
+        Collection<DailyMenu> dbMenus = menuRepo.findByDayAndRestaurants(
+                LocalDate.now(),
+                restaurants);
+
+
+        // Remove those which have menu
+        Collection<Restaurant> haveMenu = dbMenus.stream()
+                .map(DailyMenu::getRestaurant)
+                .collect(toList());
+
+        restaurants.removeAll(haveMenu);
+
+        if (restaurants.isEmpty())
+            return dbMenus;
+
+
+        // Pull the missing dbMenus from Zomato
+        Collection<DailyMenu> newMenus =
+                zomatoMenusProvider.findDailyMenus(restaurants);
+
+        menuRepo.save(newMenus);
+
+        Collection<DailyMenu> res = new ArrayList<>();
+        res.addAll(newMenus);
+        res.addAll(dbMenus);
+
+        return res;
     }
 }
