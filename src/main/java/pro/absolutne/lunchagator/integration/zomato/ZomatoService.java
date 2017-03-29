@@ -41,7 +41,7 @@ public class ZomatoService {
                 .addPathSegment(path);
     }
 
-    public List<MenuItem> getDishes(int restaurantId) {
+    public List<MenuItem> getDishes(long restaurantId) {
         HttpUrl url = addRestaurantId(buildUrl("dailymenu"), restaurantId)
                 .build();
 
@@ -53,7 +53,11 @@ public class ZomatoService {
                 .collect(toList());
     }
 
-    public boolean hasDailyMenu(int restaurantId) {
+    public boolean hasDailyMenu(ZomatoRestaurant r) {
+        return  hasDailyMenu(r.getZomatoId());
+    }
+
+    public boolean hasDailyMenu(long restaurantId) {
         try {
             getDishes(restaurantId);
         } catch (Non200Exception e) {
@@ -66,7 +70,7 @@ public class ZomatoService {
         return true;
     }
 
-    public Restaurant getRestaurant(int id) {
+    public Restaurant getRestaurant(long id) {
         HttpUrl url = addRestaurantId(buildUrl("restaurant"), id)
                 .build();
 
@@ -76,21 +80,23 @@ public class ZomatoService {
         return parseRestaurant(res);
     }
 
-    private static Restaurant parseRestaurant(Map<String, Object> data) {
+    private static ZomatoRestaurant parseRestaurant(Map<String, Object> data) {
 
         String name = (String) data.get("name");
         String resUrl = (String) data.get("url");
+        String id = (String) data.get("id");
 
-        Restaurant rest = new Restaurant();
+        ZomatoRestaurant rest = new ZomatoRestaurant();
         rest.setLocation(parseLocation(data));
         rest.setName(name);
-        rest.setUrl(resUrl.split("\\?")[0]); // Remove query string (has just referals)
+        rest.setUrl(resUrl.split("\\?")[0]); // Remove query string (has just referrals)
+        rest.setZomatoId(Long.parseLong(id));
 
         return rest;
 
     }
 
-    public Collection<Restaurant> getRestaurantsByLocation(Location location, int radius) {
+    public Collection<ZomatoRestaurant> getRestaurantsByLocation(Location location, int radius) {
         logger.debug("Retrieving restaurants {} m around {} ", radius, location);
         HttpUrl url = buildUrl("search")
                 .addQueryParameter("lat", location.getLatitude() + "")
@@ -142,8 +148,8 @@ public class ZomatoService {
         }
     }
 
-    private static HttpUrl.Builder addRestaurantId(HttpUrl.Builder urlBuilder, int id) {
-        return urlBuilder.addQueryParameter("res_id", Integer.toString(id));
+    private static HttpUrl.Builder addRestaurantId(HttpUrl.Builder urlBuilder, long id) {
+        return urlBuilder.addQueryParameter("res_id", Long.toString(id));
     }
 
     private static Request buildRequest(HttpUrl url) {
