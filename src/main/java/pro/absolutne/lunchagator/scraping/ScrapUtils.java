@@ -4,7 +4,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.DoubleSummaryStatistics;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

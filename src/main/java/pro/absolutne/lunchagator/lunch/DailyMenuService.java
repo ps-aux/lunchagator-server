@@ -2,16 +2,13 @@ package pro.absolutne.lunchagator.lunch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pro.absolutne.lunchagator.data.entity.*;
-import pro.absolutne.lunchagator.data.repo.DailyMenuRepo;
+import pro.absolutne.lunchagator.data.entity.DailyMenu;
+import pro.absolutne.lunchagator.data.entity.Restaurant;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepo;
-import pro.absolutne.lunchagator.lunch.provider.ZomatoMenuProvider;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.List;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service

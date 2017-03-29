@@ -2,12 +2,10 @@ package pro.absolutne.lunchagator.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import pro.absolutne.lunchagator.lunch.MenuProvider;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
 
 @Data
 @Entity
