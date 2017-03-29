@@ -12,6 +12,8 @@ import pro.absolutne.lunchagator.importing.RestaurantImporter;
 import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
 import pro.absolutne.lunchagator.lunch.DailyMenuService;
 
+import static java.util.stream.Collectors.toList;
+
 @CrossOrigin
 @RestController
 public class DebugController {
@@ -34,6 +36,15 @@ public class DebugController {
     @GetMapping("go")
     public void bar() {
 //        return restaurantRepo.findWithoutTodaysMenu();
+    }
+
+    @GetMapping("foo")
+    public Object foo() {
+        Location l = new Location();
+        l.setLatitude(48.141525);
+        l.setLongitude(17.110226);
+        l.setAddress("Garwan office");
+        return zomato.getRestaurantsByLocation(l, 1000);
     }
 
 }

@@ -1,5 +1,6 @@
 package pro.absolutne.lunchagator.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -23,6 +24,7 @@ public class Restaurant {
     @Embedded
     private Location location;
 
+    @JsonIgnore
     @Cascade(CascadeType.PERSIST)
     @OneToOne
     private MenuProviderInfo menuProviderInfo;
