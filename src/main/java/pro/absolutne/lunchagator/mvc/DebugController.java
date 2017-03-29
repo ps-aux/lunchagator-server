@@ -2,6 +2,7 @@ package pro.absolutne.lunchagator.mvc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pro.absolutne.lunchagator.data.entity.*;
@@ -30,9 +31,9 @@ public class DebugController {
     @Autowired
     private RestaurantImporter restaurantImporter;
 
-    @PostMapping("go")
-    public Restaurant bar() {
-        throw new UnsupportedOperationException();
+    @GetMapping("go")
+    public void bar() {
+//        return restaurantRepo.findWithoutTodaysMenu();
     }
 
 }

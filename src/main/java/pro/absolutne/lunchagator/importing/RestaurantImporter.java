@@ -60,7 +60,7 @@ public class RestaurantImporter {
     }
 
     public Collection<Restaurant> importCustomStrategies() throws IOException {
-        log.info("Importing class provider restaurants from file");
+        log.info("Importing custom providing strategies from file");
 
         InputStream is = this.getClass()
                 .getResourceAsStream("/custom-strategies.yaml");

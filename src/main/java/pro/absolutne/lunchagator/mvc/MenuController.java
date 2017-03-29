@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pro.absolutne.lunchagator.data.entity.DailyMenu;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
+import pro.absolutne.lunchagator.importing.DailyMenuImporter;
 import pro.absolutne.lunchagator.importing.RestaurantImporter;
 import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
 import pro.absolutne.lunchagator.lunch.DailyMenuService;
@@ -26,6 +27,9 @@ public class MenuController {
 
     @Autowired
     private RestaurantImporter restaurantImporter;
+
+    @Autowired
+    private DailyMenuImporter menuImporter;
 
     @PutMapping("zomato-import")
     public Restaurant importZomatoResurant(@RequestParam int id) {
@@ -51,6 +55,11 @@ public class MenuController {
     @GetMapping("today")
     public Collection<DailyMenu> todaysMenu() {
         return menuService.getAll();
+    }
+
+    @GetMapping("import-menus")
+    public void importMenus() {
+        menuImporter.importDailyMenus();
     }
 
 }
