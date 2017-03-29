@@ -44,9 +44,7 @@ public class DebugController {
         l.setLatitude(48.141525);
         l.setLongitude(17.110226);
         l.setAddress("Garwan office");
-        return zomato.getRestaurantsByLocation(l, 1000).stream()
-                .filter(zomato::hasDailyMenu)
-                .collect(toList());
+        return zomato.getRestaurantsByLocation(l, 1000);
     }
 
 }

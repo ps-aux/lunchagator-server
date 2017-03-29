@@ -53,9 +53,6 @@ public class ZomatoService {
                 .collect(toList());
     }
 
-    public boolean hasDailyMenu(ZomatoRestaurant r) {
-        return  hasDailyMenu(r.getZomatoId());
-    }
 
     public boolean hasDailyMenu(long restaurantId) {
         try {
@@ -80,23 +77,22 @@ public class ZomatoService {
         return parseRestaurant(res);
     }
 
-    private static ZomatoRestaurant parseRestaurant(Map<String, Object> data) {
+    private static Restaurant parseRestaurant(Map<String, Object> data) {
 
         String name = (String) data.get("name");
         String resUrl = (String) data.get("url");
         String id = (String) data.get("id");
 
-        ZomatoRestaurant rest = new ZomatoRestaurant();
+        Restaurant rest = new Restaurant();
         rest.setLocation(parseLocation(data));
         rest.setName(name);
         rest.setUrl(resUrl.split("\\?")[0]); // Remove query string (has just referrals)
-        rest.setZomatoId(Long.parseLong(id));
 
         return rest;
 
     }
 
-    public Collection<ZomatoRestaurant> getRestaurantsByLocation(Location location, int radius) {
+    public Collection<Restaurant> getRestaurantsByLocation(Location location, int radius) {
         logger.debug("Retrieving restaurants {} m around {} ", radius, location);
         HttpUrl url = buildUrl("search")
                 .addQueryParameter("lat", location.getLatitude() + "")
@@ -109,6 +105,18 @@ public class ZomatoService {
         return res.stream()
                 .map(ZomatoService::parseRestaurant)
                 .collect(toList());
+    }
+
+    private <T> Collection<T> collectAll(HttpUrl url) {
+
+        Map<String, Object> res = JsonPath.parse(doRequest(url)).read("$");
+        long total = Long.parseLong((String) res.get("results_found"));
+        long shown = Long.parseLong((String) res.get("results_shown"));
+        long offset = Long.parseLong((String) res.get("results_start"));
+
+
+
+        return null;
     }
 
     private HttpUrl.Builder setOffset(HttpUrl.Builder builder, int offset) {
