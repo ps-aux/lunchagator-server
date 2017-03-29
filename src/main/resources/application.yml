@@ -3,6 +3,10 @@ spring:
     serialization:
       # So we get dd-mm-yy instead of [dd,mm,yy] for LocalDate
       write_dates_as_timestamps: false
+  data:
+    rest:
+#      default-media-type: application/json
+      detection-strategy: annotated
 
 logging:
   level:

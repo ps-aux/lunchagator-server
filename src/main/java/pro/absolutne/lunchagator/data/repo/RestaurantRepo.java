@@ -7,8 +7,7 @@ import pro.absolutne.lunchagator.data.entity.Restaurant;
 
 import java.util.Optional;
 
-public interface RestaurantRepo extends
-        JpaRepository<Restaurant, String> {
+public interface RestaurantRepo extends JpaRepository<Restaurant, String> {
 
     @Query("SELECT r from Restaurant r where r.menuProviderInfo.zomatoId = :id")
     Optional<Restaurant> findByZomatoId(@Param("id") int id);

@@ -3,6 +3,7 @@ package pro.absolutne.lunchagator.data.repo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 import pro.absolutne.lunchagator.data.entity.DailyMenu;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
 
