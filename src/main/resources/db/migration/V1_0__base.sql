@@ -31,7 +31,7 @@ CREATE TABLE daily_menu (
 
 CREATE TABLE menu_item (
   id            INTEGER PRIMARY KEY,
-  name          VARCHAR(256)                       NOT NULL,
+  name          VARCHAR(1024)                       NOT NULL,
   price         DECIMAL                            NOT NULL,
   daily_menu_id INTEGER REFERENCES daily_menu (id) NOT NULL
 );

@@ -2,6 +2,8 @@ package pro.absolutne.lunchagator.importing;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pro.absolutne.lunchagator.data.entity.DailyMenu;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
@@ -11,7 +13,6 @@ import pro.absolutne.lunchagator.lunch.DailyMenuService;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -28,26 +29,52 @@ public class DailyMenuImporter {
     @Autowired
     private RestaurantRepo restaurantRepo;
 
+    @Scheduled(fixedRate = 1000 * 60 * 60)
+    public void doScheduledImport() {
+        log.debug("Running scheduled import job");
+        if (isImportNeeded())
+            importDailyMenus();
+        else
+            log.debug("Import not needed");
+    }
+
     public void importDailyMenus() {
+        log.debug("Importing daily menus");
+
+        Collection<Restaurant> rests = getRestaurantsWithouDailyMenu();
+
         // Exclude those which already have menus
+        log.debug("Daily menus of {} restaurants will be imported", rests.size());
+
+        rests.forEach(this::importDailyMenu);
+    }
+
+    private boolean isImportNeeded() {
+        return !getRestaurantsWithouDailyMenu().isEmpty();
+    }
+
+    private Collection<Restaurant> getRestaurantsWithouDailyMenu() {
         Collection<Restaurant> restaurants = restaurantRepo.findAll();
 
         Collection<Restaurant> withMenu = menuRepo.findByDay(LocalDate.now()).stream()
                 .map(DailyMenu::getRestaurant)
                 .collect(toList());
 
-        long allCount = restaurants.size();
         restaurants.removeAll(withMenu);
-        log.debug("Out of {} restaurant {} does not have daily menu imported",
-                allCount, restaurants.size());
 
-        restaurants.forEach(this::importDailyMenu);
+        return restaurants;
     }
 
+    @Async
     private void importDailyMenu(Restaurant r) {
-        log.debug("Importing daily menu for {} ", r);
-        DailyMenu m = menuService.getMenu(r);
-        log.debug("Menu retrieved successfully. Saving.", m);
-        menuRepo.save(m);
+        // Forgive exceptions - next scheduled import job will do it
+        try {
+            log.debug("Importing daily menu for {} ", r);
+            DailyMenu m = menuService.getMenu(r);
+            log.debug("Menu {} retrieved successfully. Saving.", m);
+            menuRepo.save(m);
+        } catch (Exception e) {
+            log.error("Importing of daily menu for {} failed", r, e);
+        }
     }
 }
