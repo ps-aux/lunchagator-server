@@ -2,6 +2,7 @@ package pro.absolutne.lunchagator.integration.zomato;
 
 
 import com.jayway.jsonpath.JsonPath;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -14,6 +15,7 @@ import pro.absolutne.lunchagator.data.entity.Restaurant;
 import pro.absolutne.lunchagator.scraping.ScrapUtils;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -28,23 +30,23 @@ public class ZomatoService {
 
     private static final String API_ROOT = "https://developers.zomato.com/api/v2.1";
 
-    private static final String RESTAURANT_PARAM = "{restaurant-id}";
-
-    private static final String DAILY_MENU_URL = API_ROOT
-            + "/dailymenu?res_id=" + RESTAURANT_PARAM;
-
-    private static final String RESTAURANT_URL = API_ROOT +
-            "/restaurant?res_id=" + RESTAURANT_PARAM;
-
-    private final OkHttpClient client = new OkHttpClient();
-
-    private static final String DISHES_PATH = "$.daily_menus[0].daily_menu.dishes[*].dish";
+    private static final HttpUrl urlRoot = HttpUrl.parse(API_ROOT);
 
     private static final String ROZHRANOVANY_KLIC = "26f285d8d3210d236d113e223850a017";
 
+    private final OkHttpClient client = new OkHttpClient();
+
+    private HttpUrl.Builder buildUrl(String path) {
+        return urlRoot.newBuilder()
+                .addPathSegment(path);
+    }
+
     public List<MenuItem> getDishes(int restaurantId) {
-        Request r = buildRequest(setRestaurantId(DAILY_MENU_URL, restaurantId));
-        List<Map<String, String>> d = JsonPath.parse(makeRequest(r)).read(DISHES_PATH);
+        HttpUrl url = addRestaurantId(buildUrl("dailymenu"), restaurantId)
+                .build();
+
+        List<Map<String, String>> d = JsonPath.parse(doRequest(url))
+                .read("$.daily_menus[0].daily_menu.dishes[*].dish");
 
         return d.stream()
                 .map(ZomatoService::toMenuItem)
@@ -65,21 +67,49 @@ public class ZomatoService {
     }
 
     public Restaurant getRestaurant(int id) {
-        Request r = buildRequest(setRestaurantId(RESTAURANT_URL, id));
-        Map<String, Object> res = JsonPath.parse(makeRequest(r)).read("$");
+        HttpUrl url = addRestaurantId(buildUrl("restaurant"), id)
+                .build();
 
-        String name = (String) res.get("name");
-        String url = (String) res.get("url");
+        Map<String, Object> res = JsonPath.parse(doRequest(url))
+                .read("$");
 
-        Restaurant rest = new Restaurant();
-        rest.setLocation(getLocation(res));
-        rest.setName(name);
-        rest.setUrl(url.split("\\?")[0]); // Remove query string (has just referals)
-
-        return rest;
+        return parseRestaurant(res);
     }
 
-    private Location getLocation(Map<String, Object> res) {
+    private static Restaurant parseRestaurant(Map<String, Object> data) {
+
+        String name = (String) data.get("name");
+        String resUrl = (String) data.get("url");
+
+        Restaurant rest = new Restaurant();
+        rest.setLocation(parseLocation(data));
+        rest.setName(name);
+        rest.setUrl(resUrl.split("\\?")[0]); // Remove query string (has just referals)
+
+        return rest;
+
+    }
+
+    public Collection<Restaurant> getRestaurantsByLocation(Location location, int radius) {
+        logger.debug("Retrieving restaurants {} m around {} ", radius, location);
+        HttpUrl url = buildUrl("search")
+                .addQueryParameter("lat", location.getLatitude() + "")
+                .addQueryParameter("long", location.getLongitude() + "")
+                .addQueryParameter("radius", radius + "").build();
+
+        List<Map<String, Object>> res = JsonPath.parse(doRequest(url))
+                .read("$.restaurants[*].restaurant");
+
+        return res.stream()
+                .map(ZomatoService::parseRestaurant)
+                .collect(toList());
+    }
+
+    private HttpUrl.Builder setOffset(HttpUrl.Builder builder, int offset) {
+        return builder.setQueryParameter("start", offset + "");
+    }
+
+    private static Location parseLocation(Map<String, Object> res) {
         Map<String, String> locationRes = (Map<String, String>) res.get("location");
         String addresss = locationRes.get("address");
         double lat = Double.parseDouble(locationRes.get("latitude"));
@@ -89,7 +119,8 @@ public class ZomatoService {
     }
 
 
-    private String makeRequest(Request req) {
+    private String doRequest(HttpUrl url) {
+        Request req = buildRequest(url);
         try {
             logger.trace("Making request {}", req);
             Response res = client.newCall(req).execute();
@@ -111,11 +142,11 @@ public class ZomatoService {
         }
     }
 
-    private static String setRestaurantId(String url, int id) {
-        return url.replace(RESTAURANT_PARAM, Integer.toString(id));
+    private static HttpUrl.Builder addRestaurantId(HttpUrl.Builder urlBuilder, int id) {
+        return urlBuilder.addQueryParameter("res_id", Integer.toString(id));
     }
 
-    private static Request buildRequest(String url) {
+    private static Request buildRequest(HttpUrl url) {
         return new Request.Builder()
                 .header("user_key", ROZHRANOVANY_KLIC)
                 .url(url)

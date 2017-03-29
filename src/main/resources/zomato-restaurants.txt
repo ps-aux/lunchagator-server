@@ -10,6 +10,11 @@
 16508263
 #Tempo centrum plus
 16507743
+#Hacienda
+16507721
+#Lochness Scottish Pub
+16508038
+
 
 #Divna muza
 16508131
