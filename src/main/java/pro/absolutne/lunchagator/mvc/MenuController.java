@@ -23,10 +23,9 @@ public class MenuController {
     @Autowired
     private RestaurantImporter restaurantImporter;
 
-    @Autowired
 
     @PutMapping("zomato-import")
-    public Restaurant importZomatoResurant(@RequestParam int id) {
+    public Restaurant importZomatoResurant(@RequestParam("id") int id) {
         return restaurantImporter.importZomatoResurant(id);
     }
 
