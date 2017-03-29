@@ -12,11 +12,7 @@ import java.util.Optional;
 public interface RestaurantRepo extends
         JpaRepository<Restaurant, String> {
 
-    @Query("SELECt r from Restaurant r" +
-            " JOIN r.menuInfoSource s where TYPE(s) = ZomatoMenuInfoSource")
-    Collection<Restaurant> findZomatoRestaurants();
-
-    @Query("SELECT r from Restaurant r where r.menuInfoSource.zomatoId = :id")
+    @Query("SELECT r from Restaurant r where r.menuProviderInfo.zomatoId = :id")
     Optional<Restaurant> findByZomatoId(@Param("id") int id);
 
 }

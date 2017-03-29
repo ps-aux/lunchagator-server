@@ -4,23 +4,23 @@ CREATE SEQUENCE hibernate_sequence;
 DROP TABLE IF EXISTS menu_item;
 DROP TABLE IF EXISTS daily_menu;
 DROP TABLE IF EXISTS restaurant;
-DROP TABLE IF EXISTS menu_info_source;
+DROP TABLE IF EXISTS menu_provider_info;
 
-CREATE TABLE menu_info_source (
-  id             INTEGER PRIMARY KEY,
-  type           VARCHAR(64) NOT NULL,
-  zomato_id      INTEGER UNIQUE,
-  provider_class VARCHAR(256)
+CREATE TABLE menu_provider_info (
+  id          INTEGER PRIMARY KEY,
+  type        VARCHAR(64) NOT NULL,
+  zomato_id   INTEGER UNIQUE,
+  strategy_id VARCHAR(256)
 );
 
 CREATE TABLE restaurant (
-  id                  INTEGER PRIMARY KEY,
-  name                VARCHAR(256) NOT NULL,
-  address             VARCHAR(256) NOT NULL,
-  url                 VARCHAR(256) NOT NULL,
-  latitude            DECIMAL      NOT NULL,
-  longitude           DECIMAL      NOT NULL,
-  menu_info_source_id INTEGER REFERENCES menu_info_source (id)
+  id                    INTEGER PRIMARY KEY,
+  name                  VARCHAR(256) NOT NULL,
+  address               VARCHAR(256) NOT NULL,
+  url                   VARCHAR(256) NOT NULL,
+  latitude              DECIMAL      NOT NULL,
+  longitude             DECIMAL      NOT NULL,
+  menu_provider_info_id INTEGER REFERENCES menu_provider_info (id)
 );
 
 CREATE TABLE daily_menu (

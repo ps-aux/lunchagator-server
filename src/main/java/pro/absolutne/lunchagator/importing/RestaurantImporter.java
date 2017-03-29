@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
-import pro.absolutne.lunchagator.data.entity.ClassMenuInfoSource;
+import pro.absolutne.lunchagator.data.entity.CustomProviderInfo;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
-import pro.absolutne.lunchagator.data.entity.ZomatoMenuInfoSource;
+import pro.absolutne.lunchagator.data.entity.ZomatoMenuSourceInfo;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepo;
 import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
-import pro.absolutne.lunchagator.lunch.MenuProvider;
+import pro.absolutne.lunchagator.lunch.provider.MenuProvidingStrategy;
 import pro.absolutne.lunchagator.mvc.BadRequestException;
 
 import java.io.BufferedReader;
@@ -33,14 +33,14 @@ public class RestaurantImporter {
     private ZomatoService zomato;
 
     @Autowired
-    private List<MenuProvider> providers;
+    private List<MenuProvidingStrategy> strategies;
 
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
     public Collection<Restaurant> importZomatFromFile() throws IOException {
         log.info("Importing Zomato restaurants from file");
         InputStream is = this.getClass()
-                .getResourceAsStream("/import-from-zomato.txt");
+                .getResourceAsStream("/zomato-restaurants.txt");
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -59,11 +59,11 @@ public class RestaurantImporter {
         return result;
     }
 
-    public Collection<Restaurant> importClassProviderRestaurantsFromFile() throws IOException {
+    public Collection<Restaurant> importCustomStrategies() throws IOException {
         log.info("Importing class provider restaurants from file");
 
         InputStream is = this.getClass()
-                .getResourceAsStream("/import-from-class-providers.yaml");
+                .getResourceAsStream("/custom-strategies.yaml");
 
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> list = yamlMapper.readValue(is, List.class);
@@ -71,21 +71,21 @@ public class RestaurantImporter {
         List<Restaurant> restaurants = list.stream().map(m -> {
             Restaurant r = yamlMapper.convertValue(m.get("restaurant"), Restaurant.class);
 
-            String sourceClass = (String) m.get("menu-source");
-            MenuProvider provider = providers.stream()
-                    .filter(p -> p.getClass().getName().equals(sourceClass))
+            String strategyId = (String) m.get("strategy-id");
+
+            // Just Check if strategy exists (if not we call get() on empty optional)
+            MenuProvidingStrategy provider = strategies.stream()
+                    .filter(s -> s.getId().equals(strategyId))
                     .findFirst().get();
 
-            ClassMenuInfoSource source = new ClassMenuInfoSource();
-            source.setProviderClass(provider.getClass());
+            CustomProviderInfo source = new CustomProviderInfo();
+            source.setStrategyId(strategyId);
 
-            r.setMenuInfoSource(source);
-
+            r.setMenuProviderInfo(source);
 
             return r;
 
         }).collect(toList());
-
 
         return restaurantRepo.save(restaurants);
     }
@@ -103,9 +103,10 @@ public class RestaurantImporter {
 
 
         Restaurant r = zomato.getRestaurant(id);
-        ZomatoMenuInfoSource is = new ZomatoMenuInfoSource();
+        ZomatoMenuSourceInfo is = new ZomatoMenuSourceInfo();
         is.setZomatoId(id);
-        r.setMenuInfoSource(is);
+
+        r.setMenuProviderInfo(is);
         r = restaurantRepo.save(r);
 
         return r;

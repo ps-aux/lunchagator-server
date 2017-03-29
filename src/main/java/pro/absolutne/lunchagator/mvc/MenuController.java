@@ -3,13 +3,11 @@ package pro.absolutne.lunchagator.mvc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import pro.absolutne.lunchagator.data.entity.*;
-import pro.absolutne.lunchagator.data.repo.MenuInfoSourceRepo;
-import pro.absolutne.lunchagator.data.repo.RestaurantRepo;
+import pro.absolutne.lunchagator.data.entity.DailyMenu;
+import pro.absolutne.lunchagator.data.entity.Restaurant;
 import pro.absolutne.lunchagator.importing.RestaurantImporter;
 import pro.absolutne.lunchagator.integration.zomato.ZomatoService;
 import pro.absolutne.lunchagator.lunch.DailyMenuService;
-import pro.absolutne.lunchagator.lunch.provider.PlzenskaMenuProvider;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -40,9 +38,9 @@ public class MenuController {
     }
 
 
-    @PutMapping("class-file-import")
-    public Collection<Restaurant> importClassProviderRestaurantsFromFile() throws IOException {
-        return restaurantImporter.importClassProviderRestaurantsFromFile();
+    @PutMapping("custom-strategies-import")
+    public Collection<Restaurant> importCustomStrategies() throws IOException {
+        return restaurantImporter.importCustomStrategies();
     }
 
     @GetMapping("has-menu")

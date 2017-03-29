@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import pro.absolutne.lunchagator.data.entity.DailyMenu;
 import pro.absolutne.lunchagator.data.entity.MenuItem;
 import pro.absolutne.lunchagator.data.entity.Restaurant;
-import pro.absolutne.lunchagator.lunch.MenuProvider;
 import pro.absolutne.lunchagator.scraping.ScrapUtils;
 
 import java.time.LocalDate;
@@ -19,19 +18,23 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Component
-public class PlzenskaMenuProvider implements MenuProvider {
+public class PlzenskaStrategy implements MenuProvidingStrategy {
+
+    private static final String ID = "plzenska";
 
     @Override
-    public DailyMenu findDailyMenu(Restaurant r) {
+    public String getId() {
+        return ID;
+    }
 
-        log.debug("Finding menu for", r);
-
+    @Override
+    public DailyMenu provide(Restaurant r) {
         Document d = ScrapUtils.getDocument("http://www.plzenska.sk/prazdroj/menu.php");
 
         Element holder = d.select("#prazdroj-full-txt > div").get(1);
 
         List<MenuItem> items = holder.select("> div").stream()
-                .map(PlzenskaMenuProvider::toMenuItem)
+                .map(PlzenskaStrategy::toMenuItem)
                 .collect(toList());
 
         DailyMenu menu = new DailyMenu();

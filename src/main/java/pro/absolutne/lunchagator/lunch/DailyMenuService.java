@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import pro.absolutne.lunchagator.data.entity.*;
 import pro.absolutne.lunchagator.data.repo.DailyMenuRepo;
 import pro.absolutne.lunchagator.data.repo.RestaurantRepo;
-import pro.absolutne.lunchagator.lunch.provider.ZomatoMenusProvider;
+import pro.absolutne.lunchagator.lunch.provider.ZomatoMenuProvider;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -20,17 +20,37 @@ public class DailyMenuService {
     @Autowired
     private RestaurantRepo restaurantRepo;
 
+/*
     @Autowired
     private DailyMenuRepo menuRepo;
 
     @Autowired
-    private ZomatoMenusProvider zomatoMenusProvider;
+    private ZomatoMenuProvider zomatoMenuProvider;*/
 
     @Autowired
     private List<MenuProvider> menuProviders;
 
-
     public Collection<DailyMenu> getAll() {
+        return restaurantRepo.findAll()
+                .stream()
+                .map(this::getMenu)
+                .collect(toList());
+    }
+
+    public DailyMenu getMenu(Restaurant r) {
+        MenuProvider provider = menuProviders.stream()
+                .filter(p ->
+                        p.getClass()
+                                .equals(
+                                        r.getMenuProviderInfo().getMenuProviderImpl()))
+                .findFirst().get();
+
+        //noinspection unchecked
+        return provider.findDailyMenu(r, r.getMenuProviderInfo());
+    }
+
+
+/*    public Collection<DailyMenu> getAll() {
 
         Collection<Restaurant> restaurants = restaurantRepo.findAll();
 
@@ -48,27 +68,27 @@ public class DailyMenuService {
 
 
         // Group by provider types
-        Map<Class<? extends MenuInfoSource>, List<Restaurant>> grouped =
+        Map<Class<? extends MenuSourceInfo>, List<Restaurant>> grouped =
                 restaurants.stream()
                         .collect(groupingBy(r -> r.getMenuInfoSource().getClass()));
 
         Collection<Restaurant> fromZomato = grouped
-                .getOrDefault(ZomatoMenuInfoSource.class, Collections.emptyList());
+                .getOrDefault(ZomatoMenuSourceInfo.class, Collections.emptyList());
         Collection<Restaurant> fromClass = grouped
-                .getOrDefault(ClassMenuInfoSource.class, Collections.emptyList());
+                .getOrDefault(CustomMenuSourceInfo.class, Collections.emptyList());
 
 
         Collection<DailyMenu> result = new ArrayList<>();
 
         result.addAll(fromDb);
         // TODO don't do lazy call but do cron import at the beginning of the day
-        result.addAll(getMenus(zomatoMenusProvider::findDailyMenus, fromZomato));
+        result.addAll(getMenus(zomatoMenuProvider::findDailyMenus, fromZomato));
         result.addAll(getMenus(this::fromClass, fromClass));
 
         return result;
-    }
+    }*/
 
-    private Collection<DailyMenu> fromClass(Collection<Restaurant> restaurants) {
+/*    private Collection<DailyMenu> fromClass(Collection<Restaurant> restaurants) {
         return restaurants.stream()
                 .map(this::getFromClassProvider)
                 .collect(toList());
@@ -77,7 +97,7 @@ public class DailyMenuService {
     private DailyMenu getFromClassProvider(Restaurant r) {
         MenuProvider provider = menuProviders.stream()
                 .filter(p -> {
-                    ClassMenuInfoSource source = (ClassMenuInfoSource) r.getMenuInfoSource();
+                    CustomMenuSourceInfo source = (CustomMenuSourceInfo) r.getMenuInfoSource();
                     return p.getClass() == source.getProviderClass();
                 })
                 .findFirst().get();
@@ -95,5 +115,5 @@ public class DailyMenuService {
 
         Collection<DailyMenu> menus = menusSource.apply(restaurants);
         return menuRepo.save(menus);
-    }
+    }*/
 }

@@ -3,6 +3,7 @@ package pro.absolutne.lunchagator.data.entity;
 import lombok.Data;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
+import pro.absolutne.lunchagator.lunch.MenuProvider;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -24,10 +25,6 @@ public class Restaurant {
 
     @Cascade(CascadeType.PERSIST)
     @OneToOne
-    private MenuInfoSource menuInfoSource;
+    private MenuProviderInfo menuProviderInfo;
 
-
-    public Restaurant() {
-
-    }
 }
