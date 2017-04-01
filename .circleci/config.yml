@@ -1,1 +1,9 @@
 version: 2
+jobs:
+  build:
+    working_directory: ~/lunchagator-server
+    docker:
+      - image: openjdk:8
+    steps:
+      - checkout
+      - run: echo "hello world"
