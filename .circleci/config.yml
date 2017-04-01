@@ -26,6 +26,6 @@ jobs:
       - run: |
          TAG=0.1.$CIRCLE_BUILD_NUM
          NAME=test:$TAG
-         docker build -t $NAME
+         docker build -t $NAME .
          docker login -u $DOCKER_USER -p $DOCKER_PASS
          docker push $NAME
