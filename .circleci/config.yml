@@ -6,4 +6,4 @@ jobs:
       - image: openjdk:8
     steps:
       - checkout
-      - run: echo "hello world"
+      - run: ./gradlew build
