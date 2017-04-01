@@ -10,7 +10,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: {{ checksum 'build.gradle' }}
+          key: {{ checksum "build.gradle" }}
       - store_artifacts:
         path: build/libs/lunchgator-server-*.jar
         destination: das-app.jar
