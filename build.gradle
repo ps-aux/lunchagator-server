@@ -7,44 +7,33 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
-        classpath('se.transmode.gradle:gradle-docker:1.2')
     }
 }
+
 
 plugins {
     id 'io.franzbecker.gradle-lombok' version '1.8'
 }
 
-
-group = 'dev0null'
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'docker'
-
-
-
 
 version = '0.0.1-SNAPSHOT'
-def jacksonVersion = '2.8.7' //Sync with spring boot
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
-task buildDocker(type: Docker, dependsOn: build) {
-    push = true
-    applicationName = jar.baseName
-    dockerfile = file('src/main/docker/Dockerfile')
-    doFirst {
-        copy {
-            from jar
-            into stageDir
-        }
-    }
+def jacksonVersion = '2.8.7' //Sync with spring boot
+sourceCompatibility = 1.8
+
+
+jar {
+    // Remove version from jar name
+    version = null
 }
+
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
