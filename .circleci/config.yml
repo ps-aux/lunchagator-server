@@ -12,5 +12,5 @@ jobs:
 #            - ~/.m2
 #          key: {{ checksum "build.gradle" }}
       - store_artifacts:
-        path: build/libs/lunchgator-server-*.jar
-        destination: das-app.jar
+          path: build/libs/lunchgator-server-*.jar
+          destination: das-app.jar
