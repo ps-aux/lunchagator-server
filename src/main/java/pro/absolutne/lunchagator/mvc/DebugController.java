@@ -32,6 +32,7 @@ public class DebugController {
 
     @GetMapping("go")
     public void bar() {
+        System.out.println("some debug");
 //        return restaurantRepo.findWithoutTodaysMenu();
     }
 
