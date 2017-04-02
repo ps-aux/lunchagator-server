@@ -10,7 +10,7 @@ jobs:
           key: '{{ checksum "build.gradle" }}'
       - run: |
           export APP_VERSION=$(cat .version)
-          ./gradlew build
+          ./gradlew clean build
       - save_cache:
           paths:
             - ~/.gradle
