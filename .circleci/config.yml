@@ -7,10 +7,10 @@ jobs:
     steps:
       - checkout
       - run: ./gradlew build
-#      - save_cache:
-#          paths:
-#            - ~/.m2
-#          key: {{ checksum "build.gradle" }}
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: "{{ checksum 'build.gradle' }}"
       - store_artifacts:
           path: build/libs/lunchagator-server-0.0.1-SNAPSHOT.jar
           destination: das-app.jar
