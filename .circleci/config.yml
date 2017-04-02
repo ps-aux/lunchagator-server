@@ -6,17 +6,19 @@ jobs:
       - image: openjdk:8
     steps:
       - checkout
+      - restore_cache:
+        key: '{{ checksum "build.gradle" }}'
       - run: ./gradlew build
       - save_cache:
           paths:
             - ~/.m2
           key: '{{ checksum "build.gradle" }}'
       - store_artifacts:
-          path: build/libs/lunchagator-server-0.0.1-SNAPSHOT.jar
+          path: build/libs/lunchagator-server.jar
           destination: das-app.jar
       - setup_remote_docker
       - run:
-         name: Install Docker client
+         name: install Docker client
          command: |
            set -x
            VER="17.03.0-ce"
@@ -25,7 +27,7 @@ jobs:
            mv /tmp/docker/* /usr/bin
       - run: |
          TAG=0.1.$CIRCLE_BUILD_NUM
-         NAME=dev0null/ci-test:$TAG
+         NAME=abspro/lunchgator-server:$TAG
          docker build -t $NAME .
          docker login -u $DOCKER_USER -p $DOCKER_PASS
          docker push $NAME
