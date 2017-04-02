@@ -9,7 +9,7 @@ jobs:
       - restore_cache:
           key: '{{ checksum "build.gradle" }}'
       - run: |
-          export APP_VERSION=$(cat .version)
+          export APP_VERSION=$(cat .version).$CIRCLE_BUILD_NUM
           ./gradlew clean build
       - save_cache:
           paths:
@@ -29,9 +29,9 @@ jobs:
            mv /tmp/docker/* /usr/bin
       - run: |
          export APP_VERSION=$(cat .version)
-         TAG=$APP_VERSION.$CIRCLE_BUILD_NUM
+         VERSION=$APP_VERSION.$CIRCLE_BUILD_NUM
          NAME=abspro/lunchgator-server
          docker build -t $NAME .
-         docker tag $NAME $NAME:$TAG
+         docker tag $NAME $NAME:$VERSION
          docker login -u $DOCKER_USER -p $DOCKER_PASS
          docker push $NAME
