@@ -34,6 +34,15 @@ jar {
     version = null
 }
 
+// Resource filtering
+import org.apache.tools.ant.filters.*
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            "application.version": System.getenv("APP_VERSION")
+    ]
+}
+
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'

@@ -16,3 +16,7 @@ logging:
 management:
   security:
     enabled: false
+
+info:
+  application:
+    version: @application.version@
