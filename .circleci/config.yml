@@ -11,7 +11,7 @@ jobs:
       - run: ./gradlew build
       - save_cache:
           paths:
-            - ~/.m2
+            - ~/.gradle
           key: '{{ checksum "build.gradle" }}'
       - store_artifacts:
           path: build/libs/lunchagator-server.jar
