@@ -34,12 +34,15 @@ jar {
     version = null
 }
 
+def envVersion = System.getenv("APP_VERSION")
+def appVersion = envVersion ? envVersion : "dev-version"
+
 // Resource filtering
 import org.apache.tools.ant.filters.*
 
 processResources {
     filter ReplaceTokens, tokens: [
-            "application.version": System.getenv("APP_VERSION")
+            "application.version": appVersion
     ]
 }
 
