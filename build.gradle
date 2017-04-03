@@ -46,6 +46,14 @@ processResources {
     ]
 }
 
+task makeDockerJarCopy(type: Copy) {
+    from('build/libs/')
+    into('docker/target')
+    include('*.jar')
+}
+
+build.finalizedBy(makeDockerJarCopy)
+
 
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
