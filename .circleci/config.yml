@@ -31,6 +31,7 @@ jobs:
          export APP_VERSION=$(cat .version)
          VERSION=$APP_VERSION.$CIRCLE_BUILD_NUM
          NAME=abspro/lunchgator-server
+         cd docker
          docker build -t $NAME .
          docker tag $NAME $NAME:$VERSION
          docker login -u $DOCKER_USER -p $DOCKER_PASS
