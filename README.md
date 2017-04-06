@@ -1,6 +1,6 @@
 #lunchgator-server
 
-Server repo of lunchagator - lunch menu aggregator
+Server repo of lunchgator - lunch menu aggregator
 
 To run set env vars:
 

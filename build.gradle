@@ -19,7 +19,10 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
-version = '0.0.1-SNAPSHOT'
+def envVersion = System.getenv("APP_VERSION")
+def appVersion = envVersion ? envVersion : "dev-version"
+
+version = appVersion
 
 repositories {
     mavenCentral()
@@ -34,8 +37,6 @@ jar {
     version = null
 }
 
-def envVersion = System.getenv("APP_VERSION")
-def appVersion = envVersion ? envVersion : "dev-version"
 
 // Resource filtering
 import org.apache.tools.ant.filters.*
