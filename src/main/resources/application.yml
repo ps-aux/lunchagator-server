@@ -19,4 +19,4 @@ management:
 
 info:
   application:
-    version: @application.version@
+    version: '@application.version@'
