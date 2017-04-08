@@ -13,6 +13,9 @@ logging:
     pro.absolutne: trace
     org.hibernate: info
 
+flyway:
+  enabled: false
+
 management:
   security:
     enabled: false
