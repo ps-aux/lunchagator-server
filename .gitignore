@@ -3,3 +3,5 @@
 out
 build
 docker/target
+# Just for local dev purpose
+docker/.env

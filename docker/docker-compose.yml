@@ -8,3 +8,5 @@ services:
     image: abspro/lunchgator-server
     ports:
      - ${LUNCHGATOR_PORT}:8080
+
+    network_mode: bridge
