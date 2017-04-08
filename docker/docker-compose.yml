@@ -1,0 +1,10 @@
+version: '3.0'
+services:
+  lunchgator-api:
+    environment:
+      - LUNCHGATOR_DB_JDBC_URL
+      - LUNCHGATOR_DB_USER
+      - LUNCHGATOR_DB_PASS
+    image: abspro/lunchgator-server
+    ports:
+     - ${LUNCHGATOR_PORT}:8080
