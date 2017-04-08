@@ -36,3 +36,7 @@ jobs:
          docker tag $NAME $NAME:$VERSION
          docker login -u $DOCKER_USER -p $DOCKER_PASS
          docker push $NAME
+
+notify:
+ webhooks:
+   - url: http://ci.absolutne.pro/hooks/circle-ci
